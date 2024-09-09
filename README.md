@@ -1,3 +1,4 @@
+![Netfli](NetflixLogo.jfif)
 # Netflix Shows 
 
 ## Project Description
