@@ -144,8 +144,23 @@ WHERE (type = 'Movie' OR type = 'TV Show')
 ORDER BY type;
 ```
 
-
-
+### 3. Oldest movie in the dataset
+``` sql
+SELECT
+    show_id,
+    title,
+    country,
+    release_year,
+    rating,
+    description
+FROM
+    netflix_data
+WHERE
+    type = 'Movie'
+ORDER BY
+    release_year ASC
+LIMIT 1;
+```
 
 
 
