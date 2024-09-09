@@ -1,10 +1,16 @@
 ![Netfli](NetflixLogo.jfif)
 # Netflix Shows 
 
-## Project Description
-- List and analyze content based on release years, countries, and durations.
-- Explore and categorize content based on specific criteria and keywords.
+## Project Overview: 
+ In this project, I conduct a comprehensive analysis of Netflix’s movies and TV shows dataset using SQL. My goal is to extract valuable insights and address key business questions based on the data. This README provides a detailed account of the project’s objectives, the business challenges I aim to address, the solutions I implemented, and the findings and conclusions I derived.
 
+
+## Purposes
+- Analyze the Distribution of Content Types: Examine the distribution between movies and TV shows to understand their prevalence in the dataset.
+- Identify Common Ratings: Determine the most frequent ratings assigned to both movies and TV shows, providing insights into content quality and audience preferences.
+- Examine Content by Release Year, Country, and Duration: Analyze and categorize content based on their release years, countries of origin, and durations to identify trends and patterns.
+- Explore and Categorize Content by Keywords: Investigate and classify content using specific criteria and keywords to uncover thematic trends and content characteristics.
+  
 ## Dataset
 The data for this project is sourced from the Kaggle dataset:
 
