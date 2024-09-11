@@ -2,7 +2,7 @@
 # Netflix Shows 
 
 ## Project Overview: 
- In this project, I conduct a comprehensive analysis of Netflix’s movies and TV shows dataset using SQL. My goal is to extract valuable insights and address key business questions based on the data. This README provides a detailed account of the project’s objectives, the business challenges I aim to address, the solutions I implemented, and the findings and conclusions I derived.
+ In this project, I will comprehensively analyze Netflix’s movie and TV show datasets using SQL. I aim to extract valuable insights and address key business questions based on the data. This README provides a detailed account of the project’s objectives, the business challenges I aim to address, the solutions I implemented, and the findings and conclusions I derived.
 
 
 ## Purposes
@@ -162,9 +162,104 @@ ORDER BY
 LIMIT 1;
 ```
 
+### 4. Find the Top 5 Countries with the Most Content on Netflix
+``` sql
 
+SELECT new_country, COUNT(show_id) AS total_content
+FROM (
+    SELECT UNNEST(STRING_TO_ARRAY(country, ',')) AS new_country, show_id
+    FROM netflix_data
+    WHERE country IS NOT NULL
+) AS t1
+WHERE new_country IS NOT NULL
+GROUP BY new_country
+ORDER BY total_content DESC
+LIMIT 5;
+```
 
+### 5. Rank directors based on the number of shows they have directed
+``` sql
+SELECT 
+    director, 
+    COUNT(*) AS show_count,
+    RANK() OVER (ORDER BY COUNT(*) DESC) AS rank
+FROM netflix_data
+WHERE director IS NOT NULL
+GROUP BY director;
+``` 
 
+### 6. Calculate the difference in the number of shows added between consecutive months.
+``` sql
+SELECT 
+    TO_CHAR(CAST(date_added AS DATE), 'YYYY-MM') AS month, 
+    COUNT(*) AS show_count,
+    LAG(COUNT(*)) OVER (ORDER BY TO_CHAR(CAST(date_added AS DATE), 'YYYY-MM')) AS previous_month_count,
+    (COUNT(*) - LAG(COUNT(*)) OVER (ORDER BY TO_CHAR(CAST(date_added AS DATE), 'YYYY-MM'))) / LAG(COUNT(*)) OVER (ORDER BY TO_CHAR(CAST(date_added AS DATE), 'YYYY-MM')) * 100 AS growth_rate
+FROM netflix_data
+GROUP BY month;
+``` 
+
+### 7. count the number of shows in custom duration categories (e.g., short, medium, long)
+``` sql
+SELECT 
+    CASE 
+        WHEN CAST(REGEXP_REPLACE(duration, '[^0-9]', '', 'g') AS INTEGER) < 30 THEN 'Short'  --[REGEXP_REPLACE: to strip out any non-numeric characters from the duration column, leaving only the numeric part]
+        WHEN CAST(REGEXP_REPLACE(duration, '[^0-9]', '', 'g') AS INTEGER) BETWEEN 30 AND 60 THEN 'Medium'
+        ELSE 'Long'
+    END AS duration_category,
+    COUNT(*) AS show_count
+FROM netflix_data
+WHERE type = 'Movie'
+GROUP BY duration_category;
+``` 
+
+### 8. Find the directors who have directed shows in multiple countries.
+``` sql
+SELECT director
+FROM netflix_data
+GROUP BY director
+HAVING COUNT(DISTINCT country) > 1
+LIMIT 5;
+``` 
+
+### 9. Calculate the percentage of total shows each director has directed.
+``` sql
+SELECT 
+    director, 
+    COUNT(*) AS show_count,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS percentage_of_total
+FROM netflix_data
+WHERE director IS NOT NULL
+GROUP BY director;
+``` 
+### 10. Find shows that have the same director but different countries
+``` sql
+SELECT a.title AS show1, b.title AS show2, a.director
+FROM netflix_data a
+JOIN netflix_data b ON a.director = b.director AND a.country <> b.country;
+```
+
+### 11. Find the most common words in the descriptions of shows.
+``` sql
+SELECT word, COUNT(*) AS word_count
+FROM (
+    SELECT UNNEST(STRING_TO_ARRAY(description, ' ')) AS word
+    FROM netflix_data
+) AS words
+GROUP BY word
+ORDER BY word_count DESC
+LIMIT 10;
+``` 
+### 12. Identify and remove duplicate shows based on title and release year
+``` sql
+DELETE FROM netflix_data
+WHERE show_id NOT IN (
+    SELECT MIN(show_id)
+    FROM netflix_data
+    GROUP BY title, release_year
+);
+SELECT * FROM netflix_data;
+``` 
 
 
 
